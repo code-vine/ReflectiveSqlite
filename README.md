@@ -6,8 +6,6 @@ A lightweight, attribute-driven SQLite ORM built on `Microsoft.Data.Sqlite`.
 
 ## 🚀 Getting Started
 
-### 1. 📦 Add the Library to Your Project
-
 **Step 1: Build the Library**
 
 - Compile the source code into `ReflectiveSql.dll`
@@ -111,4 +109,5 @@ SqlMapper.DeleteById<Person>(connection, newPerson.Id);
 - ✅ Attribute-driven schema generation
 - ✅ Conditional seeding
 - ✅ Modular builder pattern
+
 
