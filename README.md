@@ -56,8 +56,7 @@ public enum Gender {
 ```c#
 var builder = new SqliteDbBuilder()
     .WithFile("Data Source=game.db")
-    .WithSchemaFromTypes(typeof(Person))
-    .WithForeignKeysEnabled()
+    .WithSchemaFromAssembly(Assembly.GetExecutingAssembly())
     .WithSeed(new[] {
         new Person { FirstName = "Milo", LastName = "Muggins", Gender = Gender.Male }
     });
@@ -110,6 +109,7 @@ SqlMapper.DeleteById<Person>(connection, newPerson.Id);
 - ✅ Attribute-driven schema generation
 - ✅ Conditional seeding
 - ✅ Modular builder pattern
+
 
 
 
