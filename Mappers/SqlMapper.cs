@@ -210,27 +210,30 @@ namespace ReflectiveSql.Mappers
             return results;
         }
 
-        public static void Update<T>(SqliteConnection connection, T obj) where T : class
+        public static bool Update<T>(SqliteConnection connection, T obj) where T : class
         {
             var type = typeof(T);
             var tableAttr = type.GetCustomAttribute<TableAttribute>();
             if (tableAttr == null) throw new InvalidOperationException("Missing [Table] attribute");
 
             var props = type.GetProperties()
-                .Select(p => new {
-                    Prop = p,
-                    Attr = p.GetCustomAttribute<ColumnAttribute>()
-                })
+                .Select(p => new { Prop = p, Attr = p.GetCustomAttribute<ColumnAttribute>() })
                 .Where(x => x.Attr != null)
                 .ToList();
 
             var pk = props.FirstOrDefault(x => x.Attr.IsPrimaryKey);
             if (pk == null) throw new InvalidOperationException("No primary key defined");
 
+            var pkValue = pk.Prop.GetValue(obj);
+            if (pkValue == null) throw new InvalidOperationException("Primary key value is null");
+
             var setClauses = props
                 .Where(x => !x.Attr.IsPrimaryKey)
                 .Select(x => $"{x.Attr.Name} = @{x.Attr.Name}")
                 .ToList();
+
+            if (setClauses.Count == 0)
+                throw new InvalidOperationException("No updatable columns found");
 
             string sql = $"UPDATE {tableAttr.Name} SET {string.Join(", ", setClauses)} WHERE {pk.Attr.Name} = @{pk.Attr.Name};";
             using var cmd = connection.CreateCommand();
@@ -242,7 +245,13 @@ namespace ReflectiveSql.Mappers
                 cmd.Parameters.AddWithValue($"@{x.Attr.Name}", value);
             }
 
-            cmd.ExecuteNonQuery();
+            return cmd.ExecuteNonQuery() > 0;
+        }
+
+        public static void Upsert<T>(SqliteConnection connection, T obj) where T : class
+        {
+            if (!Update(connection, obj))
+                Insert(connection, obj);
         }
 
         public static void Delete<T>(SqliteConnection connection, T obj) where T : class
@@ -290,5 +299,7 @@ namespace ReflectiveSql.Mappers
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
         }
+
+        
     }
 }
