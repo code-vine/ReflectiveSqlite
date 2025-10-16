@@ -53,6 +53,7 @@ public enum Gender {
 ```
 
 **Step 4: 🛠️ Build and Initialize the Database**
+Automatically detects and builds database and tables using Reflection.
 ```c#
 var builder = new SqliteDbBuilder()
     .WithFile("game.db")
@@ -63,7 +64,7 @@ var builder = new SqliteDbBuilder()
 
 var connection = builder.Build();
 ```
-Automatically detects and builds database and tables using Reflection.
+
 
 **🧪 Core Operations:**
 
@@ -95,19 +96,21 @@ var newPerson = new Person {
 
 SqlMapper.Insert(connection, newPerson);
 ```
-Insert a record into the database.
+
 
 ✅ Update
+- (Attempts to update an existing record in the database. Returns  if the update was successful, or  if no matching record was found.)
+
 ``` c#
 SqlMapper.Update<Person>(connection, updatedPerson);
 ```
-Attempts to update an existing record in the database. Returns  if the update was successful, or  if no matching record was found.
 
 🔄 Upsert
+- (Updates the record if it exists; otherwise inserts it. Combines Update and Insert logic to ensure the object is persisted either way.)
+
 ``` c#
 SqlMapper.Upsert<Person>(connection, person);
 ```
-Updates the record if it exists; otherwise inserts it. Combines Update and Insert logic to ensure the object is persisted either way.
 
 ❌ Delete
 ```c#
@@ -115,7 +118,7 @@ SqlMapper.Delete<Person>(connection, newPerson);
 //or
 SqlMapper.DeleteById<Person>(connection, newPerson.Id);
 ```
-Delete a record from the database.
+
 
 
 🧠 Features:
@@ -125,6 +128,7 @@ Delete a record from the database.
 - ✅ Attribute-driven schema generation
 - ✅ Conditional seeding
 - ✅ Modular builder pattern
+
 
 
 
