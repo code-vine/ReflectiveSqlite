@@ -300,6 +300,24 @@ namespace ReflectiveSql.Mappers
             cmd.ExecuteNonQuery();
         }
 
-        
+        public static bool Exists<T>(SqliteConnection connection, object id) where T : class
+        {
+            var type = typeof(T);
+            var tableAttr = type.GetCustomAttribute<TableAttribute>();
+            if (tableAttr == null) throw new InvalidOperationException("Missing [Table] attribute");
+
+            var pkProp = type.GetProperties()
+                .Select(p => new { Prop = p, Attr = p.GetCustomAttribute<ColumnAttribute>() })
+                .FirstOrDefault(x => x.Attr?.IsPrimaryKey == true);
+
+            if (pkProp == null) throw new InvalidOperationException("No primary key defined");
+
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = $"SELECT 1 FROM {tableAttr.Name} WHERE {pkProp.Attr.Name} = @id LIMIT 1;";
+            cmd.Parameters.AddWithValue("@id", id);
+
+            using var reader = cmd.ExecuteReader();
+            return reader.Read();
+        }
     }
 }
