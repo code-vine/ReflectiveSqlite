@@ -1,7 +1,7 @@
 ﻿# 🧱 SQLite Reflection ORM for .NET
 
 A lightweight, attribute-driven SQLite ORM built on `Microsoft.Data.Sqlite`.
-
+Can be used in Godot.
 ---
 
 ## 🚀 Getting Started
@@ -63,6 +63,7 @@ var builder = new SqliteDbBuilder()
 
 var connection = builder.Build();
 ```
+Automatically detects and builds database and tables using Reflection.
 
 **🧪 Core Operations:**
 
@@ -82,6 +83,7 @@ var results = SqlMapper.QueryWhere<Person>(connection, new Dictionary<string, ob
     { "Gender", Gender.Female }
 });
 ```
+Query the database with filters.
 
 ➕ Insert
 ```c#
@@ -93,6 +95,19 @@ var newPerson = new Person {
 
 SqlMapper.Insert(connection, newPerson);
 ```
+Insert a record into the database.
+
+✅ Update
+``` c#
+SqlMapper.Update<Person>(connection, updatedPerson);
+```
+Attempts to update an existing record in the database. Returns  if the update was successful, or  if no matching record was found.
+
+🔄 Upsert
+``` c#
+SqlMapper.Upsert<Person>(connection, person);
+```
+Updates the record if it exists; otherwise inserts it. Combines Update and Insert logic to ensure the object is persisted either way.
 
 ❌ Delete
 ```c#
@@ -100,6 +115,7 @@ SqlMapper.Delete<Person>(connection, newPerson);
 //or
 SqlMapper.DeleteById<Person>(connection, newPerson.Id);
 ```
+Delete a record from the database.
 
 
 🧠 Features:
@@ -109,6 +125,7 @@ SqlMapper.DeleteById<Person>(connection, newPerson.Id);
 - ✅ Attribute-driven schema generation
 - ✅ Conditional seeding
 - ✅ Modular builder pattern
+
 
 
 
